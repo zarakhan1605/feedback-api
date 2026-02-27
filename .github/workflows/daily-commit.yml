@@ -2,8 +2,8 @@ name: Daily Commit Automation
 
 on:
   schedule:
-    - cron: '30 8 * * *'  # daily at 08:30 UTC
-  workflow_dispatch:  # allows manual trigger
+    - cron: '30 8 * * *'
+  workflow_dispatch:  # allows manual run
 
 jobs:
   commit:
@@ -18,5 +18,7 @@ jobs:
           git config user.name "DevSync Bot"
           git config user.email "23f1000005@ds.study.iitm.ac.in"
           git add daily_log.txt
-          git commit -m "Daily automated commit $(date)"
-          git push
+          git commit -m "Daily automated commit $(date)" || echo "No changes to commit"
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
