@@ -2,8 +2,8 @@ name: Daily Commit Automation
 
 on:
   schedule:
-    - cron: '30 8 * * *'  # daily at 08:30 UTC
-  workflow_dispatch:       # allows manual run
+    - cron: '30 8 * * *'       # daily at 08:30 UTC
+  workflow_dispatch:            # allow manual runs
 
 jobs:
   commit:
@@ -12,13 +12,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: false  # important!
+          persist-credentials: false
 
       - name: Commit Update for email 23f1000005@ds.study.iitm.ac.in
         run: |
-          echo "Daily update $(date)" >> daily_log.txt
+          # Make sure the file exists and append a timestamp
+          echo "Daily update $(date +%s)" >> daily_log.txt
           git config user.name "DevSync Bot"
           git config user.email "23f1000005@ds.study.iitm.ac.in"
           git add daily_log.txt
-          git commit -m "Daily automated commit $(date)" || echo "No changes to commit"
+          git commit -m "Daily automated commit $(date)" || echo "No changes? Still trying..."
+          # Push using GitHub token
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
